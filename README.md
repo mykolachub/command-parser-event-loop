@@ -1,2 +1,2 @@
 # command-parser-event-loop
-Assigmnet: Command Parser for Golang Event Loop
+Assignment: Command Parser for Golang Event Loop
