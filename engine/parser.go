@@ -2,7 +2,7 @@ package engine
 
 import (
 	"fmt"
-	engine "github.com/command-parser-event-loop/engine/commands"
+	commands "github.com/nikolaichub/command-parser-event-loop/engine/commands"
 	"strconv"
 	"strings"
 )
@@ -14,21 +14,21 @@ func Parse(in string) Command {
 		args := fields[1:]
 		if name == "print" {
 			text := strings.Join(args, " ")
-			return engine.NewPrintCommand(text)
+			return commands.NewPrintCommand(text)
 		} else if name == "add" {
 			arg1, err := strconv.Atoi(args[0])
 			if err != nil {
-				return engine.NewPrintCommand(fmt.Sprintf("SYNTAX ERROR: %s", err.Error()))
+				return commands.NewPrintCommand(fmt.Sprintf("SYNTAX ERROR: %s", err.Error()))
 			}
 
 			arg2, err := strconv.Atoi(args[1])
 			if err != nil {
-				return engine.NewPrintCommand(fmt.Sprintf("SYNTAX ERROR: %s", err.Error()))
+				return commands.NewPrintCommand(fmt.Sprintf("SYNTAX ERROR: %s", err.Error()))
 			}
 
-			return engine.NewAddCommand(arg1, arg2)
+			return commands.NewAddCommand(arg1, arg2)
 		} else {
-			return engine.NewPrintCommand(fmt.Sprintf("SYNTAX ERROR: Invalid command name (%s)", name))
+			return commands.NewPrintCommand(fmt.Sprintf("SYNTAX ERROR: Invalid command name (%s)", name))
 		}
 	}
 
