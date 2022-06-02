@@ -1,5 +1,7 @@
 package engine
 
+import "sync"
+
 type Command interface {
 }
 
@@ -25,6 +27,11 @@ func (l *EventLoop) AwaitFinish() {
 }
 
 type CommandQueue struct {
+	mu sync.Mutex
+	a  []Command
+
+	notEmpty chan struct{}
+	wait     bool
 }
 
 // Push command to the Queue
