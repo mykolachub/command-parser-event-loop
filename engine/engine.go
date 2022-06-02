@@ -11,6 +11,7 @@ type Handler interface {
 type EventLoop struct {
 	q *CommandQueue
 
+	stopSignal chan struct{}
 	stop bool
 }
 
