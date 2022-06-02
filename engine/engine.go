@@ -1,6 +1,8 @@
 package engine
 
-import "sync"
+import (
+	"sync"
+)
 
 type Command interface {
 }
@@ -45,11 +47,26 @@ func (cq *CommandQueue) push(c Command) {
 }
 
 // Pull command from the Queue
-func (cq *CommandQueue) pull(c Command) {
+func (cq *CommandQueue) pull() Command {
+	cq.mu.Lock()
+	defer cq.mu.Unlock()
 
+	if len(cq.a) == 0 {
+		cq.wait = true
+		cq.mu.Unlock()
+		<-cq.notEmpty
+		cq.mu.Lock()
+	}
+
+	res := cq.a[0]
+	cq.a[0] = nil
+	cq.a = cq.a[1:]
+	return res
 }
 
 // Is Command Queue empty
-func (cq *CommandQueue) isEmpty(c Command) {
-
+func (cq *CommandQueue) empty() bool {
+	cq.mu.Lock()
+	defer cq.mu.Unlock()
+	return len(cq.a) == 0
 }
