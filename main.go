@@ -16,9 +16,9 @@ func main() {
 		scanner := bufio.NewScanner(input)
 		for scanner.Scan() {
 			commandLine := scanner.Text()
-			fmt.Printf("commandLine: %v\n", commandLine)
+			// fmt.Printf("commandLine: %v\n", commandLine)
 			cmd := engine.Parse(commandLine) // parse the line to get a Command -> &printCommand{arg: “hello”}
-			fmt.Print(cmd)
+			fmt.Printf("cmd: %v\n", cmd)
 			eventLoop.Post(cmd)
 		}
 	}

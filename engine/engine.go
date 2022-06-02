@@ -25,9 +25,11 @@ func (l *EventLoop) Start() {
 		notEmpty: make(chan struct{}),
 	}
 	l.stopSignal = make(chan struct{})
+	l.stop = false
 	go func() {
 		for !l.stop || !l.q.empty() {
 			cmd := l.q.pull()
+			// fmt.Printf("l.q: %v\n", l.q)
 			cmd.Execute(l)
 		}
 		l.stopSignal <- struct{}{}
@@ -65,6 +67,7 @@ func (cq *CommandQueue) push(c Command) {
 	cq.mu.Lock()
 	defer cq.mu.Unlock()
 	cq.a = append(cq.a, c)
+
 	if cq.wait {
 		cq.notEmpty <- struct{}{}
 	}
