@@ -21,7 +21,7 @@ func (l *EventLoop) Start() {
 	}
 	l.stopSignal = make(chan struct{})
 	go func() {
-		for !l.stop || l.q.enpty(){
+		for !l.stop || !l.q.empty(){
 			cmd := l.q.pull()
 			cmd.Execute(l)
 		}
