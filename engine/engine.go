@@ -36,7 +36,12 @@ type CommandQueue struct {
 
 // Push command to the Queue
 func (cq *CommandQueue) push(c Command) {
-
+	cq.mu.Lock()
+	defer cq.mu.Unlock()
+	cq.a = append(cq.a, c)
+	if cq.wait {
+		cq.notEmpty <- struct{}{}
+	}
 }
 
 // Pull command from the Queue
