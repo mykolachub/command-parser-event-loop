@@ -1,27 +1,41 @@
 package engine
 
 type Command interface {
+	Execute(handler Handler)
 }
 
 type Handler interface {
+	Post(c Command)
 }
 
 type EventLoop struct {
+	q *CommandQueue
+
+	stop bool
 }
 
 // Start executing commands
 func (l *EventLoop) Start() {
-
+	l.q = &CommandQueue{
+		notEmpty: make(chan struct{}),
+	}
+	l.stopSignal = make(chan struct{})
+	go func() {
+		for !l.stop || l.q.enpty(){
+			cmd := l.q.pull()
+			cmd.Execute(l)
+		}
+		l.stopSignal <- struct{}{}
+	}()
 }
 
 // Add Command to the Command Queue
 func (l *EventLoop) Post(c Command) {
-
+	l.q.push(c)
 }
 
 // Await until all commands executed
 func (l *EventLoop) AwaitFinish() {
-
 }
 
 type CommandQueue struct {
