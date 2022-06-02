@@ -16,7 +16,7 @@ type EventLoop struct {
 	q *CommandQueue
 
 	stopSignal chan struct{}
-	stop bool
+	stop       bool
 }
 
 // Start executing commands
@@ -26,12 +26,19 @@ func (l *EventLoop) Start() {
 	}
 	l.stopSignal = make(chan struct{})
 	go func() {
-		for !l.stop || !l.q.empty(){
+		for !l.stop || !l.q.empty() {
 			cmd := l.q.pull()
 			cmd.Execute(l)
 		}
 		l.stopSignal <- struct{}{}
 	}()
+}
+
+// Stop command to set EventLoop stop flag
+type stopCommand struct{}
+
+func (s stopCommand) Execute(h Handler) {
+	h.(*EventLoop).stop = true
 }
 
 // Add Command to the Command Queue
@@ -41,6 +48,8 @@ func (l *EventLoop) Post(c Command) {
 
 // Await until all commands executed
 func (l *EventLoop) AwaitFinish() {
+	l.Post(stopCommand{})
+	<-l.stopSignal
 }
 
 type CommandQueue struct {
