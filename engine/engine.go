@@ -35,13 +35,6 @@ func (l *EventLoop) Start() {
 	}()
 }
 
-// Stop command to set EventLoop stop flag
-type stopCommand struct{}
-
-func (s stopCommand) Execute(h Handler) {
-	h.(*EventLoop).stop = true
-}
-
 // Add Command to the Command Queue
 func (l *EventLoop) Post(c Command) {
 	l.q.push(c)
@@ -49,7 +42,7 @@ func (l *EventLoop) Post(c Command) {
 
 // Await until all commands executed
 func (l *EventLoop) AwaitFinish() {
-	l.Post(stopCommand{})
+	l.Post(NewStopCommand())
 	<-l.stopSignal
 }
 
