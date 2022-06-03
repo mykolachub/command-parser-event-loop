@@ -29,7 +29,6 @@ func (l *EventLoop) Start() {
 	go func() {
 		for !l.stop || !l.q.empty() {
 			cmd := l.q.pull()
-			// fmt.Printf("l.q: %v\n", l.q)
 			cmd.Execute(l)
 		}
 		l.stopSignal <- struct{}{}
@@ -69,6 +68,7 @@ func (cq *CommandQueue) push(c Command) {
 	cq.a = append(cq.a, c)
 
 	if cq.wait {
+		cq.wait = false
 		cq.notEmpty <- struct{}{}
 	}
 }
@@ -78,7 +78,7 @@ func (cq *CommandQueue) pull() Command {
 	cq.mu.Lock()
 	defer cq.mu.Unlock()
 
-	if len(cq.a) == 0 {
+	if cq.empty() {
 		cq.wait = true
 		cq.mu.Unlock()
 		<-cq.notEmpty
@@ -93,7 +93,5 @@ func (cq *CommandQueue) pull() Command {
 
 // Is Command Queue empty
 func (cq *CommandQueue) empty() bool {
-	cq.mu.Lock()
-	defer cq.mu.Unlock()
 	return len(cq.a) == 0
 }
