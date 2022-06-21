@@ -42,7 +42,7 @@ func (l *EventLoop) Post(c Command) {
 
 // Await until all commands executed
 func (l *EventLoop) AwaitFinish() {
-	l.Post(NewStopCommand())
+	l.Post(&stopCommand{})
 	<-l.stopSignal
 }
 
