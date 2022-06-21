@@ -13,7 +13,7 @@ type Handler interface {
 }
 
 type EventLoop struct {
-	q *CommandQueue
+	q *commandQueue
 
 	stopSignal chan struct{}
 	stop       bool
@@ -21,7 +21,7 @@ type EventLoop struct {
 
 // Start executing commands
 func (l *EventLoop) Start() {
-	l.q = &CommandQueue{
+	l.q = &commandQueue{
 		notEmpty: make(chan struct{}),
 	}
 	l.stopSignal = make(chan struct{})
@@ -46,7 +46,7 @@ func (l *EventLoop) AwaitFinish() {
 	<-l.stopSignal
 }
 
-type CommandQueue struct {
+type commandQueue struct {
 	mu sync.Mutex
 	a  []Command
 
@@ -55,7 +55,7 @@ type CommandQueue struct {
 }
 
 // Push command to the Queue
-func (cq *CommandQueue) push(c Command) {
+func (cq *commandQueue) push(c Command) {
 	cq.mu.Lock()
 	defer cq.mu.Unlock()
 	cq.a = append(cq.a, c)
@@ -67,7 +67,7 @@ func (cq *CommandQueue) push(c Command) {
 }
 
 // Pull command from the Queue
-func (cq *CommandQueue) pull() Command {
+func (cq *commandQueue) pull() Command {
 	cq.mu.Lock()
 	defer cq.mu.Unlock()
 
@@ -85,6 +85,6 @@ func (cq *CommandQueue) pull() Command {
 }
 
 // Is Command Queue empty
-func (cq *CommandQueue) empty() bool {
+func (cq *commandQueue) empty() bool {
 	return len(cq.a) == 0
 }
